@@ -1,0 +1,24 @@
+using UnityEngine;
+using System.Collections;
+
+public class MarbleCamera : MonoBehaviour {
+	
+	// 加入目標物
+    public Transform target;
+	// 攝影機高度
+	public float relativeHeigth = 10.0f;
+	// 攝影機水平
+    public float zDistance = 5.0f;
+	// 攝影機和目標物距離
+    public float dampSpeed = 2;
+
+    void Update () {
+		// 攝影機新位置 = 目標物 + 攝影機設定
+        Vector3 newPos = target.position + new Vector3(0, relativeHeigth, -zDistance);
+		// 攝影機位置
+        transform.position = Vector3.Lerp(transform.position, newPos, Time.deltaTime*dampSpeed);
+	}
+}
+
+// 作者: http://www.m2h.nl/
+// 原檔案: https://www.assetstore.unity3d.com/#/content/116(內附教學文件)

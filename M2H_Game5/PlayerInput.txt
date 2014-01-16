@@ -1,0 +1,41 @@
+using UnityEngine;
+using System.Collections;
+
+public class PlayerInput : MonoBehaviour {
+
+	// 罐頭聲音
+    public AudioClip canHitSound;
+
+	void Update () {
+	
+		// 左鍵滑鼠點擊
+        if(Input.GetMouseButtonDown(0)){
+            Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast (ray, out hit, 100)) {
+
+                // 攝影機由滑鼠點擊畫出線條
+				Debug.DrawLine (ray.origin, hit.point);
+				
+				// 滑鼠點擊標靶 發出targethit 聲音
+                if (hit.transform.tag == "ShootingObject")
+                {
+                    audio.pitch = Random.Range(0.9f, 1.3f);
+                    audio.Play();
+                    GameManager.SP.RemoveObject(hit.transform);
+					
+				// 滑鼠點擊罐頭移動 發出Tick 聲音
+                } else if(hit.transform.tag == "Can"){
+                    audio.PlayOneShot(canHitSound);
+
+					Vector3 explosionPos = transform.position;
+                    hit.rigidbody.AddExplosionForce(5000, explosionPos, 25.0f, 1.0f);
+                }
+
+            }
+        }
+	}
+}
+
+// 作者: http://www.m2h.nl/
+// 原檔案: https://www.assetstore.unity3d.com/#/content/116(內附教學文件)

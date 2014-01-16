@@ -1,0 +1,45 @@
+using UnityEngine;
+using System.Collections;
+
+public class Playermovement : MonoBehaviour
+{
+    // 玩家移動設定
+	public float movementSpeed = 5.0f;
+    private bool isGrounded = false;
+
+
+    void Update() {
+        // 設定X和Z速度為0
+		//Set X and Z velocity to 0
+		rigidbody.velocity = new Vector3(0, rigidbody.velocity.y, 0); 
+ 
+        transform.Translate(Input.GetAxis("Horizontal") * Time.deltaTime * movementSpeed, 0, 0);
+
+        /*if (Input.GetButtonDown("Jump") && isGrounded)
+        {
+            Jump(); //Manual jumping
+        }*/
+	}
+	
+	// 玩家跳高
+    void Jump()
+    {
+        if (!isGrounded) { return; }
+        isGrounded = false;
+        rigidbody.velocity = new Vector3(0, 0, 0);
+		// 玩家跳高設定Y
+        rigidbody.AddForce(new Vector3(0, 700, 0), ForceMode.Force);        
+    }
+
+    void FixedUpdate()
+    {
+        isGrounded = Physics.Raycast(transform.position, -Vector3.up, 1.0f);
+        if (isGrounded)
+        {
+            Jump(); //Automatic jumping
+        }
+    }
+}
+
+// 作者: http://www.m2h.nl/
+// 原檔案: https://www.assetstore.unity3d.com/#/content/116(內附教學文件)

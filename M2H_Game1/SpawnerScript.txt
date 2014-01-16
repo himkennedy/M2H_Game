@@ -1,0 +1,40 @@
+using UnityEngine;
+using System.Collections;
+
+public class SpawnerScript : MonoBehaviour {
+
+	// 加入預製物件
+    public Transform eggPrefab;
+
+	// 下一次預製物件時間
+    private float nextEggTime = 0.0f;
+	// 預製物件速度
+    private float spawnRate = 1.5f;
+ 	
+	// 更新預製物件位置, 時間, 速度
+	void Update () {
+        if (nextEggTime < Time.time)
+        {
+            //複製預製物件
+			SpawnEgg(); 
+			
+			nextEggTime = Time.time + spawnRate; 
+			
+			// 加速下一次複製預製物件
+			//Speed up the spawnrate for the next egg 
+            spawnRate *= 0.98f;
+			//加速限制在0.3到99這範圍
+			spawnRate = Mathf.Clamp(spawnRate, 0.3f, 99f); 
+        }
+	}
+	//複製預製物件設定
+    void SpawnEgg()
+    {
+        float addXPos = Random.Range(-1.6f, 1.6f); //限制在X範圍
+        Vector3 spawnPos = transform.position + new Vector3(addXPos,0,0); //預製物件移動範圍
+        Instantiate(eggPrefab, spawnPos, Quaternion.identity); //複製預製物件
+    }
+}
+
+// 作者: http://www.m2h.nl/
+// 原檔案: https://www.assetstore.unity3d.com/#/content/116(內附教學文件)

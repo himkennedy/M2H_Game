@@ -1,0 +1,82 @@
+using UnityEngine;
+using System.Collections;
+
+public class GameManager : MonoBehaviour {
+
+    public static GameManager SP;
+	
+	// 設定標靶陣列, 速度, 數量
+    private ArrayList objectsList;
+    private float moveSpeed = 1.5f;
+    private int spawnedObjects = 0;
+	
+	// 設定分數
+    private int score;
+
+	void Awake () {
+        SP = this;
+
+        objectsList = new ArrayList();
+        spawnedObjects = score =0;
+	}
+
+    void Update()
+    {
+        //Move objects
+        for (int i = objectsList.Count - 1; i >= 0; i--)
+        {
+            // 標靶左或右可移動範圍
+			float farLeft = -10;
+            float farRight = 10;
+
+			// 標靶左或右移動
+            MovingObject movObj = (MovingObject)objectsList[i];
+            Transform trans = movObj.transform;
+            trans.Translate((int)movObj.direction * Time.deltaTime * moveSpeed, 0, 0);
+			
+			// 超過標靶左或右可移動範圍, 該標靶消失和在陣列中移除
+            if (trans.position.x < farLeft || trans.position.x > farRight)
+            {
+                Destroy(trans.gameObject);
+                objectsList.Remove(movObj);
+            }
+        }
+    }
+
+    void OnGUI(){
+        if(GUILayout.Button("Restart")){
+            Application.LoadLevel(Application.loadedLevel);
+        }
+        GUILayout.Label(" Hit: " + score + "/" + spawnedObjects);
+    }
+	
+	// 標靶加入陣列中
+    public void AddTarget(MovingObject newObj){
+        spawnedObjects++;
+        objectsList.Add(newObj);
+    }
+	
+	// 標靶移除陣列中, 加分
+    public bool RemoveObject(Transform trans)
+    {
+        
+        foreach (MovingObject obj in objectsList)
+        {
+            if (obj.transform == trans)
+            {
+                score++;
+                objectsList.Remove(obj);
+                Destroy(obj.transform.gameObject); 
+                return true; 
+            }
+        }
+        Debug.LogError("ERROR: Couldn't find target!");
+        return false;
+    }
+
+}
+
+
+// 作者: http://www.m2h.nl/
+// 原檔案: https://www.assetstore.unity3d.com/#/content/116(內附教學文件)
+

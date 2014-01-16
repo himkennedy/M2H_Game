@@ -1,0 +1,14 @@
+using UnityEngine;
+using System.Collections;
+
+public class Block : MonoBehaviour {
+
+	void OnTriggerEnter () {
+		// 載入BreakoutGame 球擊中磚塊
+        BreakoutGame.SP.HitBlock();
+        Destroy(gameObject);
+	}
+}
+
+// 作者: http://www.m2h.nl/
+// 原檔案: https://www.assetstore.unity3d.com/#/content/116(內附教學文件)

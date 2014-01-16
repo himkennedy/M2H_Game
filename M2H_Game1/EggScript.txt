@@ -1,0 +1,30 @@
+using UnityEngine;
+using System.Collections;
+
+public class EggScript : MonoBehaviour {
+
+    void Awake()
+    {
+        // 增加力量給蛋 
+		//rigidbody.AddForce(new Vector3(0, -100, 0), ForceMode.Force);
+    }
+
+    // 持續更新蛋移動位置
+	//Update is called by Unity every frame
+	void Update () {
+		
+		// 蛋在Y方向每秒移動
+        float fallSpeed = 2 * Time.deltaTime;
+        transform.position -= new Vector3(0, fallSpeed, 0);
+		
+		//蛋在Y方向範圍以外就消失
+        if (transform.position.y < -1 || transform.position.y >= 20)
+        {
+            //Destroy this gameobject (and all attached components)
+            Destroy(gameObject);
+        }
+	}
+}
+
+// 作者: http://www.m2h.nl/
+// 原檔案: https://www.assetstore.unity3d.com/#/content/116(內附教學文件)

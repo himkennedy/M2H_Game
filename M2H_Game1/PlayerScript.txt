@@ -1,0 +1,36 @@
+using UnityEngine;
+using System.Collections;
+
+public class PlayerScript : MonoBehaviour {
+    
+    //設定分數
+	public int theScore = 0;
+
+	void Update () {
+		
+		// 玩家水平移動
+        //These two lines are all there is to the actual movement..
+        float moveInput = Input.GetAxis("Horizontal") * Time.deltaTime * 3; 
+        transform.position += new Vector3(moveInput, 0, 0);
+
+        // 玩家在X方向範圍移動
+		//Restrict movement between two values
+        if (transform.position.x <= -2.5f || transform.position.x >= 2.5f)
+        {
+            float xPos = Mathf.Clamp(transform.position.x, -2.5f, 2.5f); //Clamp between min -2.5 and max 2.5
+            transform.position = new Vector3(xPos, transform.position.y, transform.position.z);
+        }
+	}
+
+    //OnGUI is called multiple times per frame. Use this for GUI stuff only!
+    void OnGUI()
+    {
+        // 顯示分數
+		//We display the game GUI from the playerscript
+        //It would be nicer to have a seperate script dedicated to the GUI though...
+        GUILayout.Label("Score: " + theScore);
+    }    
+}
+
+// 作者: http://www.m2h.nl/
+// 原檔案: https://www.assetstore.unity3d.com/#/content/116(內附教學文件)

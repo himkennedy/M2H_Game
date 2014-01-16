@@ -1,0 +1,103 @@
+using UnityEngine;
+using System.Collections;
+
+public enum BreakoutGameState { playing, won, lost };
+
+public class BreakoutGame : MonoBehaviour
+{
+    public static BreakoutGame SP;
+	
+	// 加入 球物件
+    public Transform ballPrefab;
+	
+	// 磚塊總數量
+    private int totalBlocks;
+	// 球擊中磚塊分數
+    private int blocksHit;
+    private BreakoutGameState gameState;
+
+
+    void Awake()
+    {
+        SP = this;
+        blocksHit = 0;
+        gameState = BreakoutGameState.playing;
+        totalBlocks = GameObject.FindGameObjectsWithTag("Pickup").Length;
+        Time.timeScale = 1.0f;
+        SpawnBall();
+    }
+
+    void SpawnBall()
+    {
+        // 球複製位置
+		Instantiate(ballPrefab, new Vector3(1.81f, 1.0f , 9.75f), Quaternion.identity);
+    }
+
+    void OnGUI(){
+    
+        GUILayout.Space(10);
+        GUILayout.Label("  Hit: " + blocksHit + "/" + totalBlocks);
+
+        if (gameState == BreakoutGameState.lost)
+        {
+            GUILayout.Label("You Lost!");
+            if (GUILayout.Button("Try again"))
+            {
+                Application.LoadLevel(Application.loadedLevel);
+            }
+        }
+        else if (gameState == BreakoutGameState.won)
+        {
+            GUILayout.Label("You won!");
+            if (GUILayout.Button("Play again"))
+            {
+                Application.LoadLevel(Application.loadedLevel);
+            }
+        }
+    }
+	// 球擊中磚塊設定
+    public void HitBlock()
+    {
+        blocksHit++;
+        
+        //For fun:
+		//Every 10th block will spawn a new ball
+		// 每撞10個磚塊就多一個球 
+        if (blocksHit%10 == 0)		
+        {
+            SpawnBall();
+        }
+       
+        if (blocksHit >= totalBlocks)
+        {
+            WonGame();
+        }
+    }
+	// 勝利
+    public void WonGame()
+    {
+        // 遊戲場景播放--停止
+		Time.timeScale = 0.0f; //Pause game
+        gameState = BreakoutGameState.won;
+    }
+	// 失敗
+    public void LostBall()
+    {
+        //  找尋遊戲中 Player總數量
+		int ballsLeft = GameObject.FindGameObjectsWithTag("Player").Length;
+        if(ballsLeft <= 1){
+            //Was the last ball..
+            SetGameOver();
+        }
+    }
+	// 失敗設定
+    public void SetGameOver()
+    {
+        // 遊戲場景播放--停止
+		Time.timeScale = 0.0f; //Pause game
+        gameState = BreakoutGameState.lost;
+    }
+}
+
+// 作者: http://www.m2h.nl/
+// 原檔案: https://www.assetstore.unity3d.com/#/content/116(內附教學文件)

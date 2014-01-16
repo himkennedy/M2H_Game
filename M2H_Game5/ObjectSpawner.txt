@@ -1,0 +1,69 @@
+using UnityEngine;
+using System.Collections;
+
+// 標靶移動設定
+public class MovingObject{
+	// 標靶方向
+    public DirectionEnum direction; //-1 or 1;
+    public Transform transform;
+
+    public MovingObject(DirectionEnum dir, Transform trans)
+    {
+        direction = dir;
+        transform = trans;
+    }
+    
+}
+
+[System.Serializable]
+// 定義常數--標靶左, 標靶右
+public enum DirectionEnum{left = -1, right= 1}
+
+public class ObjectSpawner : MonoBehaviour {
+
+    // 加入標靶物件
+	public Transform objectPrefab;
+    // 預設標靶方向
+	public DirectionEnum spawnDirection = DirectionEnum.right;
+    public static ObjectSpawner SP;
+
+    private float farLeft;
+    private float farRight;    
+    private float lastSpawnTime;
+    private float spawnInterval;   
+
+
+	void Awake () {
+        SP = this;
+        // 標靶在時間範圍生成
+        spawnInterval = Random.Range(3.5f, 5.5f);
+        lastSpawnTime = Time.time + Random.Range(0.0f, 1.5f);
+	}
+
+    
+	void Update () {
+        //Spawn new object.. 標靶生成
+        if ((lastSpawnTime + spawnInterval) < Time.time)
+        {
+            SpawnObject();
+        }      
+	}
+
+    void SpawnObject()
+    {        
+        lastSpawnTime = Time.time;
+        spawnInterval *= 0.99f;//Speed up spawning 加速時間標靶生成
+
+		// -1 or 1 標靶左,右方向
+        DirectionEnum direction = spawnDirection; 
+		
+		// 複製標靶
+        Transform newObj = (Transform)Instantiate(objectPrefab, transform.position, transform.rotation);
+        MovingObject movObj = new MovingObject(direction, newObj);        
+        // 載入 GameManager AddTarget
+		GameManager.SP.AddTarget( movObj );
+    }
+}
+
+// 作者: http://www.m2h.nl/
+// 原檔案: https://www.assetstore.unity3d.com/#/content/116(內附教學文件)

@@ -1,0 +1,34 @@
+using UnityEngine;
+using System.Collections;
+
+public class MarbleControl : MonoBehaviour {
+
+    // 玩家速度設定
+	public float movementSpeed = 6.0f;
+	
+	void Update () {
+			// 玩家移動
+        	Vector3 movement = (Input.GetAxis("Horizontal") * -Vector3.left * movementSpeed) + (Input.GetAxis("Vertical") * Vector3.forward *movementSpeed);
+			// 不斷加速
+			movement *= Time.deltaTime;
+        	rigidbody.AddForce(movement, ForceMode.Force);
+	}
+
+    void OnTriggerEnter  (Collider other  ) {
+		// 如碰撞Pickup
+        if (other.tag == "Pickup")
+        {
+            // 載入 MarbleGameManager 勝利條件
+			MarbleGameManager.SP.FoundGem();
+            // 目標物消失
+			Destroy(other.gameObject);
+        }
+        else
+        {
+            //Other collider.. See other.tag and other.name
+        }        
+    }
+}
+
+// 作者: http://www.m2h.nl/
+// 原檔案: https://www.assetstore.unity3d.com/#/content/116(內附教學文件)

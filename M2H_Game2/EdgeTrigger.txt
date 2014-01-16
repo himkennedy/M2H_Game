@@ -1,0 +1,14 @@
+using UnityEngine;
+using System.Collections;
+
+public class EdgeTrigger : MonoBehaviour {
+
+    //You could implement this yourself..
+
+   void OnTriggerEnter(){
+       Debug.Log("OnTriggerEnter..");
+   }
+}
+
+// 作者: http://www.m2h.nl/
+// 原檔案: https://www.assetstore.unity3d.com/#/content/116(內附教學文件)

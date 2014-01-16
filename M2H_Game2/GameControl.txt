@@ -1,0 +1,131 @@
+using UnityEngine;
+using System.Collections;
+
+// 定義常數--遊戲狀態--playing, gameover
+public enum GameState { playing, gameover };
+
+public class GameControl : MonoBehaviour {
+
+    // 設定預製物件(浮台)
+	public Transform platformPrefab;
+	// 設定遊戲狀態
+    public static GameState gameState;
+	
+	// 加入玩家
+    private Transform playerTrans;
+	// 設定浮台高度
+    private float platformsSpawnedUpTo = 0.0f;
+	// 設定浮台陣列
+    private ArrayList platforms;
+    private float nextPlatformCheck = 0.0f;
+
+    
+	void Awake () {
+		// 找尋標籤Player
+        playerTrans = GameObject.FindGameObjectWithTag("Player").transform;
+		// 新浮台陣列
+        platforms = new ArrayList();
+
+        SpawnPlatforms(25.0f);
+        StartGame();
+	}
+
+	// 開始遊戲
+    void StartGame()
+    {
+        // 遊戲場景播放--正常
+		Time.timeScale = 1.0f;
+		// 遊戲狀態 playing
+        gameState = GameState.playing;
+    }
+	
+	// 結束遊戲
+    void GameOver()
+    {
+        // 遊戲場景播放--暫停
+		Time.timeScale = 0.0f; //Pause the game
+		// 遊戲狀態 gameover
+        gameState = GameState.gameover;
+		// 載入 GameGUI
+        GameGUI.SP.CheckHighscore();
+    }
+	
+	// 更新攝影機, 浮台, 玩家 
+	void Update () {
+        //Do we need to spawn new platforms yet? (we do this every X meters we climb)
+        float playerHeight = playerTrans.position.y;
+        if (playerHeight > nextPlatformCheck)
+        {
+            PlatformMaintenaince(); //Spawn new platforms
+        }
+
+        // 攝影機跟隨玩家位置 , 玩家低過攝影機高度 -> 遊戲狀態 gameover
+		//Update camera position if the player has climbed and if the player is too low: Set gameover.
+        float currentCameraHeight = transform.position.y;
+        float newHeight = Mathf.Lerp(currentCameraHeight, playerHeight, Time.deltaTime * 10);
+        if (playerTrans.position.y > currentCameraHeight)
+        {
+            transform.position = new Vector3(transform.position.x, newHeight, transform.position.z);
+        }else{
+			//Player is lower..maybe below the cameras view?
+            if (playerHeight < (currentCameraHeight - 10))
+            {
+                GameOver();
+            }
+        }
+		
+		// 更新分數 -- 玩家新分數大過舊分數, 記錄新分數替代
+        //Have we reached a new score yet?
+        if (playerHeight > GameGUI.score)
+        {
+            GameGUI.score = (int)playerHeight;
+        }
+	}
+
+    void PlatformMaintenaince()
+    {
+        nextPlatformCheck = playerTrans.position.y + 10;
+
+        //Delete all platforms below us (save performance)
+        for(int i = platforms.Count-1;i>=0;i--)
+        {
+            Transform plat = (Transform)platforms[i];
+            if (plat.position.y < (transform.position.y - 10))
+            {
+                Destroy(plat.gameObject);
+                platforms.RemoveAt(i);
+            }            
+        }
+
+        //Spawn new platforms, 25 units in advance
+        SpawnPlatforms(nextPlatformCheck + 25);
+    }
+
+	// 複製浮台
+    void SpawnPlatforms(float upTo)
+    {
+        float spawnHeight = platformsSpawnedUpTo;
+        while (spawnHeight <= upTo)
+        {
+            // 浮台在水平範圍生成(以0,X 為中心延伸)
+			//float x = Random.Range(-10.0f, 10.0f);
+			float x = Random.Range(-4.0f, 4.0f);
+			// 浮台生成位置--X水平, Y垂直, Z深度 (深度需調較和地面Z深度一致)
+			//Vector3 pos = new Vector3(spawnHeight, x, 12.0f);
+			Vector3 pos = new Vector3(x, spawnHeight, 0f);
+
+            Transform plat = (Transform)Instantiate(platformPrefab, pos, Quaternion.identity);
+            platforms.Add(plat);
+			
+			// 浮台在垂直範圍生成-(最低位置, 最高位置)
+			// 需留意玩家高度計劃難度(以X,0 為中心延伸)
+			//spawnHeight += Random.Range(3.0f, 5.0f);
+            spawnHeight += Random.Range(1.6f, 3.5f);
+			
+        }
+        platformsSpawnedUpTo = upTo;
+    }
+}
+
+// 作者: http://www.m2h.nl/
+// 原檔案: https://www.assetstore.unity3d.com/#/content/116(內附教學文件)

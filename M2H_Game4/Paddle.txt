@@ -1,0 +1,32 @@
+using UnityEngine;
+using System.Collections;
+
+public class Paddle : MonoBehaviour {
+
+    // 玩家速度設定
+	public float moveSpeed = 15;
+		
+	void Update () {
+		// 玩家水平移動
+        float moveInput = Input.GetAxis("Horizontal") * Time.deltaTime * moveSpeed;
+        transform.position += new Vector3(moveInput, 0, 0);
+
+        // 玩家移動最大範圍
+		float max = 14.0f;
+        if (transform.position.x <= -max || transform.position.x >= max)
+        {
+            float xPos = Mathf.Clamp(transform.position.x, -max, max); //Clamp between min -5 and max 5
+            transform.position = new Vector3(xPos, transform.position.y, transform.position.z);
+        }
+	}
+	// 玩家碰撞球的反應
+    void OnCollisionExit(Collision collisionInfo ) {
+        //Add X velocity..otherwise the ball would only go up&down
+        Rigidbody rigid = collisionInfo.rigidbody;
+        float xDistance = rigid.position.x - transform.position.x;
+        rigid.velocity = new Vector3(rigid.velocity.x + xDistance/2, rigid.velocity.y, rigid.velocity.z);
+    }
+}
+
+// 作者: http://www.m2h.nl/
+// 原檔案: https://www.assetstore.unity3d.com/#/content/116(內附教學文件)

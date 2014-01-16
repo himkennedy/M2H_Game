@@ -1,0 +1,39 @@
+using UnityEngine;
+using System.Collections;
+
+public class Ball : MonoBehaviour {
+
+    // 球最大速度
+	public float maxVelocity = 20;
+	// 球最小速度
+    public float minVelocity = 15;
+
+	void Awake () {
+        rigidbody.velocity = new Vector3(0, 0, -18);
+	}
+
+	void Update () {
+        //Make sure we stay between the MAX and MIN speed.
+        float totalVelocity = Vector3.Magnitude(rigidbody.velocity);
+        if(totalVelocity>maxVelocity){
+            float tooHard = totalVelocity / maxVelocity;
+            rigidbody.velocity /= tooHard;
+        }
+        else if (totalVelocity < minVelocity)
+        {
+            float tooSlowRate = totalVelocity / minVelocity;
+            rigidbody.velocity /= tooSlowRate;
+        }
+		
+		// 如球在Z超過-3, 就消失.
+        //Is the ball below -3? Then we're game over.
+        if(transform.position.z <= -3){ 
+			// 載入BreakoutGame 失敗
+            BreakoutGame.SP.LostBall();
+            Destroy(gameObject);
+        }
+	}
+}
+
+// 作者: http://www.m2h.nl/
+// 原檔案: https://www.assetstore.unity3d.com/#/content/116(內附教學文件)
